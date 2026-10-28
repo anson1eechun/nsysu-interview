@@ -27,7 +27,7 @@ import plusrepPoster from './assets/plusrep-poster.jpg';
 import rehabSeated from './assets/rehab-seated.jpg';
 import appPoster from './assets/zaoxingzhe-poster.jpg';
 
-const appClip = new URL('./assets/zaoxingzhe-clip.mp4', import.meta.url).href;
+const appVideo = new URL('./assets/zaoxingzhe.mp4', import.meta.url).href;
 const plusrepVideo = new URL('./assets/plusrep.mp4', import.meta.url).href;
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
@@ -1200,7 +1200,7 @@ const AppWork: Page = () => (
       sub="造星者：兒童專注力訓練 App ｜ 2026 行動應用創新賽 ｜ 負責主要程式設計與美術設計"
     />
     <VideoFrame
-      src={appClip}
+      src={appVideo}
       poster={appPoster}
       alt="造星者 App 畫面"
       label="DEMO · 造星者"
@@ -1208,6 +1208,7 @@ const AppWork: Page = () => (
       top={340}
       width={992}
       height={558}
+      sound
     />
     <div style={{ position: 'absolute', left: 1160, top: 340, width: 640, display: 'flex', flexDirection: 'column', gap: 26 }}>
       <TechItem icon={<EyeIcon />} title="MediaPipe 虹膜偵測" desc="網頁端即時追蹤雙眼位置" delay={0.8} />
@@ -1789,7 +1790,8 @@ export const notes: (string | undefined)[] = [
 第三個作品叫「造星者」，是幫小朋友練專注力的 App，主要的程式是我寫的。
 它的核心是視線追蹤：網頁版用 MediaPipe 抓虹膜；iPad 版我自己寫了 ARKit 外掛，把視線投影到螢幕上，再看 5 個點做校準。
 測試的時候我們發現，鏡頭被遮住時系統會誤判，所以我加了一條規則：視線停住超過 3 秒，就算分心。
-不過它在只看企劃書的初賽就被刷掉了。回頭檢討，是企劃書少了數據。這讓我學到，做得出來只是第一步，還要能用數據證明它的價值。`,
+不過它在只看企劃書的初賽就被刷掉了。回頭檢討，是企劃書少了數據。這讓我學到，做得出來只是第一步，還要能用數據證明它的價值。
+（老師如果想看，可以按影片右下角「有聲播放」）`,
   `（約 30 秒）
 課餘時間，我用二手零件自己組了一台 HomeLab。兩張顯卡各改成 22GB，加起來有 44GB 的顯示記憶體。
 一個 125B 參數的模型，一般至少要 80GB 才跑得動。我就把它拆開，分層放在顯示記憶體、系統記憶體跟 SSD，最後真的跑起來了。
