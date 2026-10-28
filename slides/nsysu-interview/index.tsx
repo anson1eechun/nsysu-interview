@@ -24,6 +24,7 @@ import clubTeam from './assets/club-team.jpg';
 import clubTogether from './assets/club-together.jpg';
 import headshot from './assets/headshot.jpg';
 import plusrepPoster from './assets/plusrep-poster.jpg';
+import rehabSeated from './assets/rehab-seated.jpg';
 import appPoster from './assets/zaoxingzhe-poster.jpg';
 
 const appVideo = new URL('./assets/zaoxingzhe.mp4', import.meta.url).href;
@@ -1481,139 +1482,442 @@ const HomeLab: Page = () => {
   );
 };
 
-// ─── 7. 我能帶來的 ───────────────────────────────────────────────────────────
+// ─── 7. 研究動機：看不清、跑不動 ─────────────────────────────────────────────
 
-const ROW_H = 164;
-const ROW_GAP = 24;
-const ROWS_TOP = 380;
-const LEFT_W = 740;
-const RIGHT_X = 1000;
+const TOP = 320;
+const LAND_W = 480;
+const LAND_H = 440;
+const PROB_X = 720;
+const PROB_W = 520;
+const PROB_GAP = 40;
+const VIS_W = PROB_W - 48;
+const VIS_H = 210;
 
-const BringRow = ({
-  i,
-  skill,
-  field,
-  did1,
-  did2,
-  bring,
-}: {
-  i: number;
-  skill: string;
-  field: string;
-  did1: string;
-  did2: string;
-  bring: string;
-}) => {
+const LandPanel = () => {
   const live = useIsActivePage();
-  const top = ROWS_TOP + i * (ROW_H + ROW_GAP);
-  const delay = 0.6 + i * 0.45;
-  const midY = ROW_H / 2;
-  const card: CSSProperties = {
-    position: 'absolute',
-    top,
-    height: ROW_H,
-    padding: '22px 28px',
-    borderRadius: 'var(--osd-radius)',
-  };
+  const [conf, setConf] = useState(0.42);
+  useAnimationFrame((t) => {
+    if (!live) return;
+    const v = 0.55 + 0.3 * Math.sin(t / 420) * Math.sin(t / 1330 + 1);
+    setConf(Math.max(0.12, Math.min(0.95, v)));
+  });
+  const low = conf < 0.5;
   return (
-    <>
-      <motion.div
-        style={{ ...card, left: PAD, width: LEFT_W, background: panel, border: `1px solid ${line}` }}
-        initial={live ? { opacity: 0, x: -40 } : false}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, delay, ease: EASE }}
-      >
-        <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: '0.08em', color: 'var(--osd-accent)' }}>{skill}</div>
-        <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.55, color: muted }}>
-          <div>{did1}</div>
-          <div>{did2}</div>
-        </div>
-      </motion.div>
-      <svg
-        width={RIGHT_X - (PAD + LEFT_W)}
-        height={ROW_H}
-        style={{ position: 'absolute', left: PAD + LEFT_W, top, overflow: 'visible', pointerEvents: 'none' }}
-      >
-        <motion.line
-          x1={8}
-          y1={midY}
-          x2={RIGHT_X - (PAD + LEFT_W) - 14}
-          y2={midY}
-          stroke="#5fe3e0"
-          strokeWidth={3}
-          strokeDasharray="2 8"
-          strokeLinecap="round"
-          initial={live ? { pathLength: 0 } : false}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.5, delay: delay + 0.35, ease: EASE }}
-        />
-        <polygon
-          points={`${RIGHT_X - (PAD + LEFT_W) - 14},${midY - 9} ${RIGHT_X - (PAD + LEFT_W) - 2},${midY} ${RIGHT_X - (PAD + LEFT_W) - 14},${midY + 9}`}
-          fill="#5fe3e0"
-        />
-        {live && (
-          <motion.circle
-            cy={midY}
-            r={6}
-            fill={amber}
-            initial={{ cx: 8, opacity: 0 }}
-            animate={{ cx: [8, RIGHT_X - (PAD + LEFT_W) - 16], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.4, delay: delay + 0.9, repeat: Infinity, repeatDelay: 1.2, ease: 'easeInOut' }}
-          />
-        )}
-      </svg>
-      <motion.div
+    <Rise delay={0.5} style={{ position: 'absolute', left: PAD, top: TOP, width: LAND_W }}>
+      <div
         style={{
-          ...card,
-          left: RIGHT_X,
-          width: 1800 - RIGHT_X,
-          background: 'rgba(255,197,110,0.06)',
-          border: '1.5px solid rgba(255,197,110,0.45)',
+          position: 'relative',
+          height: LAND_H,
+          borderRadius: 'var(--osd-radius)',
+          overflow: 'hidden',
+          border: `1px solid ${line}`,
         }}
-        initial={live ? { opacity: 0, x: 40 } : false}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.7, delay: delay + 0.55, ease: EASE }}
       >
-        <div style={{ fontSize: 30, fontWeight: 700, color: amber }}>{field}</div>
-        <div style={{ marginTop: 6, fontSize: 28, lineHeight: 1.5 }}>{bring}</div>
-      </motion.div>
-    </>
+        <img
+          src={rehabSeated}
+          alt="專題實機畫面"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: '0% 50%',
+            display: 'block',
+            filter: 'brightness(0.72) saturate(0.8)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 200,
+            background: 'linear-gradient(0deg, rgba(2,12,22,0.97) 45%, rgba(2,12,22,0))',
+          }}
+        />
+        <div style={{ position: 'absolute', left: 28, right: 28, bottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 24, color: muted }}>
+            <span>關節點信心值</span>
+            <span style={{ fontFamily: MONO, color: low ? '#ff8a8a' : 'var(--osd-accent)' }}>{conf.toFixed(2)}</span>
+          </div>
+          <div style={{ height: 12, marginTop: 10, borderRadius: 6, background: 'rgba(147,179,196,0.2)' }}>
+            <div
+              style={{
+                width: `${conf * 100}%`,
+                height: '100%',
+                borderRadius: 6,
+                background: low ? '#ff8a8a' : 'var(--osd-accent)',
+              }}
+            />
+          </div>
+        </div>
+        <span
+          style={{
+            position: 'absolute',
+            left: 12,
+            top: 10,
+            padding: '6px 14px',
+            borderRadius: 8,
+            fontFamily: MONO,
+            fontSize: 22,
+            background: 'rgba(2,12,22,0.85)',
+            color: 'var(--osd-accent)',
+          }}
+        >
+          陸地 · 我的專題
+        </span>
+      </div>
+      <p style={{ margin: '16px 0 0', fontSize: 26, lineHeight: 1.5, color: muted }}>
+        遮擋、低光 → 信心值下降、骨架跳動
+      </p>
+    </Rise>
   );
 };
 
-const Bring: Page = () => (
+const ToSea = () => {
+  const live = useIsActivePage();
+  const [ref, shown] = useStepShown();
+  return (
+    <motion.div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        left: PAD + LAND_W,
+        top: TOP,
+        width: PROB_X - PAD - LAND_W,
+        height: LAND_H,
+        display: 'grid',
+        placeItems: 'center',
+        textAlign: 'center',
+      }}
+      initial={live ? { opacity: 0, x: -20 } : false}
+      animate={shown ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: 0.6, ease: EASE }}
+    >
+      <div>
+        <div style={{ fontSize: 24, color: muted }}>到了水下</div>
+        <div
+          style={{
+            fontSize: 64,
+            color: 'var(--osd-accent)',
+            animation: live && shown ? 'dv-nudge 1.6s ease-in-out infinite' : 'none',
+          }}
+        >
+          →
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// A clear reef scene; the murky half of <Murky> is this same drawing, filtered.
+const Seabed = ({ detect = false }: { detect?: boolean }) => (
+  <svg width={VIS_W} height={VIS_H} viewBox={`0 0 ${VIS_W} ${VIS_H}`} style={{ display: 'block' }}>
+    <rect width={VIS_W} height={VIS_H} fill="#3d9fbd" />
+    <rect width={VIS_W} height={70} fill="#63c1d8" />
+    <polygon points="70,0 120,0 190,210 130,210" fill="rgba(255,255,255,0.14)" />
+    <polygon points="250,0 280,0 330,210 290,210" fill="rgba(255,255,255,0.1)" />
+    <path d="M0 160 Q 90 142 180 156 T 360 150 T 472 158 V 210 H 0 Z" fill="#e3cb8f" />
+    <ellipse cx={402} cy={164} rx={48} ry={26} fill="#7f8a86" />
+    <ellipse cx={436} cy={176} rx={30} ry={18} fill="#68736f" />
+    {[28, 44, 60].map((x) => (
+      <path key={x} d={`M${x} 168 Q ${x - 12} 128 ${x + 4} 92`} stroke="#3fae6a" strokeWidth={6} strokeLinecap="round" fill="none" />
+    ))}
+    <path
+      d="M300 166 V132 M300 142 L284 118 M300 138 L318 112 M318 112 L326 98 M284 118 L278 102"
+      stroke="#ff7a4d"
+      strokeWidth={9}
+      strokeLinecap="round"
+      fill="none"
+    />
+    <path d="M110 166 V140 M110 148 L98 128 M110 146 L124 126" stroke="#ff6fa0" strokeWidth={8} strokeLinecap="round" fill="none" />
+    <g transform="translate(196 84)">
+      <ellipse rx={34} ry={18} fill="#ffd23f" />
+      <polygon points="30,0 52,-16 52,16" fill="#ffd23f" />
+      <path d="M-8 -16 V16 M6 -17 V17" stroke="#1d3557" strokeWidth={5} />
+      <circle cx={-20} cy={-4} r={4} fill="#1d3557" />
+    </g>
+    <g transform="translate(380 58) scale(0.6)">
+      <ellipse rx={34} ry={18} fill="#ff9f1c" />
+      <polygon points="30,0 52,-16 52,16" fill="#ff9f1c" />
+      <circle cx={-20} cy={-4} r={4} fill="#1d3557" />
+    </g>
+    {detect && (
+      <g>
+        <rect x={152} y={60} width={104} height={48} rx={4} fill="none" stroke="#5fe3e0" strokeWidth={3} />
+        <rect x={152} y={34} width={92} height={24} rx={4} fill="#5fe3e0" />
+        <text x={160} y={52} fontSize={17} fontFamily={MONO} fill="#02121e">
+          魚 0.94
+        </text>
+      </g>
+    )}
+  </svg>
+);
+
+const visBox: CSSProperties = {
+  position: 'relative',
+  width: VIS_W,
+  height: VIS_H,
+  borderRadius: 12,
+  overflow: 'hidden',
+  border: `1px solid ${line}`,
+};
+
+const tag: CSSProperties = {
+  position: 'absolute',
+  top: 10,
+  padding: '2px 10px',
+  borderRadius: 6,
+  fontSize: 18,
+  background: 'rgba(2,12,22,0.75)',
+};
+
+// 看不清: a wipe slides across the frame, turning the blue-green blur back into a clear scene.
+const Murky = () => {
+  const live = useIsActivePage();
+  const [ref, shown] = useStepShown();
+  const play = live && shown;
+  return (
+    <div ref={ref} style={visBox}>
+      <div style={{ position: 'absolute', inset: 0, filter: 'blur(3px) saturate(0.35) brightness(0.8)' }}>
+        <Seabed />
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(180deg, rgba(28,140,150,0.5), rgba(4,44,64,0.75))',
+        }}
+      />
+      <svg width={VIS_W} height={VIS_H} style={{ position: 'absolute', inset: 0 }}>
+        {Array.from({ length: 34 }).map((_, k) => (
+          <circle
+            key={k}
+            cx={rand(k + 400) * VIS_W}
+            cy={rand(k + 500) * VIS_H}
+            r={1 + rand(k + 600) * 2.2}
+            fill="rgba(225,245,250,0.55)"
+          />
+        ))}
+      </svg>
+      <motion.div
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          width: VIS_W / 2,
+          overflow: 'hidden',
+          borderRight: '3px solid #5fe3e0',
+          boxShadow: '6px 0 18px rgba(95,227,224,0.45)',
+        }}
+        initial={false}
+        animate={play ? { width: [0, VIS_W] } : { width: VIS_W / 2 }}
+        transition={
+          play
+            ? { duration: 2.4, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror', repeatDelay: 1.2 }
+            : { duration: 0 }
+        }
+      >
+        <Seabed detect />
+      </motion.div>
+      <span style={{ ...tag, left: 10, color: 'var(--osd-accent)' }}>影像處理後</span>
+      <span style={{ ...tag, right: 10, color: muted }}>水下原始畫面</span>
+    </div>
+  );
+};
+
+const LAYERS = 6;
+const PRUNED = [1, 4];
+const smooth = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
+// One 5.2 s loop: hold the full model, squeeze it, hold the small one, snap back.
+const squeezeAt = (p: number) =>
+  p < 0.18 ? 0 : p < 0.58 ? smooth((p - 0.18) / 0.4) : p < 0.9 ? 1 : 1 - smooth((p - 0.9) / 0.1);
+
+// 跑不動: the model block is quantised and pruned while the latency readout falls.
+const Squeeze = () => {
+  const live = useIsActivePage();
+  const [ref, shown] = useStepShown();
+  const play = live && shown;
+  const t0 = useRef<number | null>(null);
+  const [q, setQ] = useState(1);
+  useAnimationFrame((t) => {
+    if (!play) {
+      t0.current = null;
+      return;
+    }
+    t0.current ??= t;
+    setQ(squeezeAt(((t - t0.current) % 5200) / 5200));
+  });
+  const w = 168 - 84 * q;
+  const h = 18 - 7 * q;
+  const gap = 7 - 2 * q;
+  const ms = Math.round(200 - 175 * q);
+  const pct = Math.round(q * 100);
+  return (
+    <div ref={ref} style={{ ...visBox, background: 'rgba(2,12,22,0.55)' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: 236, height: VIS_H - 44, display: 'grid', placeItems: 'center' }}>
+        <div style={{ position: 'relative', width: 168, height: LAYERS * h + (LAYERS - 1) * gap }}>
+          {Array.from({ length: LAYERS }).map((_, k) => (
+            <div
+              key={k}
+              style={{
+                position: 'absolute',
+                left: (168 - w) / 2,
+                top: k * (h + gap),
+                width: w,
+                height: h,
+                borderRadius: 4,
+                background: `color-mix(in srgb, #5fe3e0 ${pct}%, #93b3c4)`,
+                opacity: PRUNED.includes(k) ? 0.9 - 0.75 * q : 0.9,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: 0, width: 236, bottom: 16, textAlign: 'center', fontFamily: MONO, fontSize: 18, color: dim }}>
+        {q < 0.5 ? '原始模型' : '量化・剪枝後'}
+      </div>
+      <div style={{ position: 'absolute', left: 236, top: 20, bottom: 20, width: 1, background: line }} />
+      <div style={{ position: 'absolute', left: 262, top: 34, right: 20 }}>
+        <div style={{ fontFamily: MONO, fontSize: 18, color: dim }}>推論延遲（示意）</div>
+        <div
+          style={{
+            marginTop: 4,
+            fontFamily: MONO,
+            fontSize: 60,
+            fontWeight: 600,
+            lineHeight: 1.2,
+            color: `color-mix(in srgb, #5fe3e0 ${pct}%, ${amber})`,
+          }}
+        >
+          {ms}
+          <span style={{ fontSize: 24, marginLeft: 8, color: muted }}>ms</span>
+        </div>
+        <div style={{ marginTop: 14, height: 10, borderRadius: 5, background: 'rgba(147,179,196,0.2)' }}>
+          <div
+            style={{
+              width: `${(ms / 200) * 100}%`,
+              height: '100%',
+              borderRadius: 5,
+              background: `color-mix(in srgb, #5fe3e0 ${pct}%, ${amber})`,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Problem = ({
+  i,
+  title,
+  cause1,
+  cause2,
+  field,
+  did,
+  children,
+}: {
+  i: number;
+  title: string;
+  cause1: string;
+  cause2: string;
+  field: string;
+  did: string;
+  children: ReactNode;
+}) => {
+  const live = useIsActivePage();
+  const [ref, shown] = useStepShown();
+  return (
+    <motion.div
+      ref={ref}
+      style={{
+        position: 'absolute',
+        left: PROB_X + i * (PROB_W + PROB_GAP),
+        top: TOP,
+        width: PROB_W,
+        padding: '20px 24px 22px',
+        borderRadius: 'var(--osd-radius)',
+        background: panel,
+        border: `1px solid ${line}`,
+      }}
+      initial={live ? { opacity: 0, y: 30 } : false}
+      animate={shown ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+      transition={{ duration: 0.7, ease: EASE }}
+    >
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
+        <span style={{ fontFamily: MONO, fontSize: 22, letterSpacing: '0.08em', color: 'var(--osd-accent)' }}>問題 {i + 1}</span>
+        <span style={{ fontSize: 42, fontWeight: 900 }}>{title}</span>
+      </div>
+      <div style={{ marginTop: 12 }}>{children}</div>
+      <div style={{ marginTop: 12, fontSize: 24, lineHeight: 1.5, color: muted }}>
+        <div>{cause1}</div>
+        <div>{cause2}</div>
+      </div>
+      <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${line}` }}>
+        <div style={{ fontSize: 30, fontWeight: 700, color: amber }}>
+          我想研究 ▸ <span>{field}</span>
+        </div>
+        <div style={{ marginTop: 4, fontSize: 22, color: dim }}>
+          我做過：<span>{did}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const Conclusion = () => {
+  const live = useIsActivePage();
+  const [ref, shown] = useStepShown();
+  return (
+    <motion.div
+      ref={ref}
+      style={{ position: 'absolute', left: PAD, top: 876, fontSize: 36, fontWeight: 700 }}
+      initial={live ? { opacity: 0, y: 24 } : false}
+      animate={shown ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      transition={{ duration: 0.8, ease: EASE }}
+    >
+      <span>
+        讓載具在水下自己看得清、也算得動 —— <span style={{ color: 'var(--osd-accent)' }}>這就是我想來海下所研究的事。</span>
+      </span>
+    </motion.div>
+  );
+};
+
+const Underwater: Page = () => (
   <Frame depth={300}>
-    <Header no="06" kicker="我能帶來的" title="我能為實驗室帶來什麼" sub="把做過的事，接到海下所的研究上" />
-    <Rise delay={0.4} style={{ position: 'absolute', left: PAD, top: 332, width: LEFT_W, fontFamily: MONO, fontSize: 22, color: dim }}>
-      <span>我做過的</span>
-    </Rise>
-    <Rise delay={0.4} style={{ position: 'absolute', left: RIGHT_X, top: 332, fontFamily: MONO, fontSize: 22, color: dim }}>
-      <span>能帶到實驗室的</span>
-    </Rise>
-    <BringRow
-      i={0}
-      skill="邊緣 AI 部署"
-      field="AI 模型最佳化"
-      did1="中階手機 30 FPS、單幀 18–25 ms，iPad 本機推論"
-      did2="HomeLab：125B 模型分層跑在 44GB 顯示記憶體上"
-      bring="把「有限硬體也跑得動」的經驗，用在水下載具的即時推論"
-    />
-    <BringRow
-      i={1}
-      skill="電腦視覺"
-      field="水下影像處理"
-      did1="骨架偵測、關節角度計算、遮蔽幀線性插補"
-      did2="MediaPipe 虹膜偵測與 5 點視線校準"
-      bring="把處理不穩定影像的經驗，延伸到水下影像增強與辨識"
-    />
-    <BringRow
-      i={2}
-      skill="系統實作"
-      field="實驗工具與系統整合"
-      did1="從 App、本機 AI 到患者・家屬・醫師三端同步"
-      did2="自寫 ARKit 外掛，把原型做成能上台比賽的作品"
-      bring="快速做出實驗工具與展示原型，讓研究成果真的能用"
-    />
+    <Header no="06" kicker="研究動機" title="到了水下，有兩個問題：看不清、跑不動" sub="專題裡遇過的問題，到了水下會更嚴重" />
+    <LandPanel />
+    <Steps>
+      <Step duration={1}>
+        <ToSea />
+        <Problem
+          i={0}
+          title="看不清"
+          field="影像處理"
+          did="遮蔽幀插補、虹膜偵測與校準"
+          cause1="光線隨深度衰減 → 畫面偏藍綠"
+          cause2="懸浮微粒、低光 → 模糊、雜訊"
+        >
+          <Murky />
+        </Problem>
+      </Step>
+      <Step duration={1}>
+        <Problem
+          i={1}
+          title="跑不動"
+          field="AI 模型最佳化"
+          did="手機 30 FPS、HomeLab 分層推論"
+          cause1="載具上算力、電力都有限"
+          cause2="通訊受限 → 不能丟上雲端"
+        >
+          <Squeeze />
+        </Problem>
+      </Step>
+      <Step duration={1}>
+        <Conclusion />
+      </Step>
+    </Steps>
   </Frame>
 );
 
@@ -1751,9 +2055,6 @@ const StudyPlan: Page = () => {
 
 // ─── Deck ────────────────────────────────────────────────────────────────────
 
-// Shared with slides/nsysu-interview-7a, which swaps in another page 7 for comparison.
-export { amber, dim, EASE, Frame, line, MONO, muted, PAD, panel, rand, Rise, useStepShown };
-
 export const transition: SlideTransition = {
   duration: 280,
   exit: { duration: 280, easing: 'cubic-bezier(0.4, 0, 1, 1)', keyframes: [{ opacity: 1 }, { opacity: 1 }] },
@@ -1772,7 +2073,7 @@ export const meta: SlideMeta = {
   createdAt: '2026-10-28T07:51:38.876Z',
 };
 
-export default [Cover, Intro, Awards, Project, AppWork, HomeLab, Bring, StudyPlan] satisfies Page[];
+export default [Cover, Intro, Awards, Project, AppWork, HomeLab, Underwater, StudyPlan] satisfies Page[];
 
 export const notes: (string | undefined)[] = [
   `（約 20 秒）
@@ -1807,11 +2108,11 @@ export const notes: (string | undefined)[] = [
 課餘時間，我用二手零件自己組了一台 HomeLab。兩張顯卡各改成 22GB，加起來有 44GB 的顯示記憶體。
 一個 125B 參數的模型，一般至少要 80GB 才跑得動。我就把它拆開，分層放在顯示記憶體、系統記憶體跟 SSD，最後真的跑起來了。
 這讓我體會到：硬體有限的時候，關鍵其實是資料要怎麼搬。`,
-  `（約 40 秒）
-那我能為實驗室帶來什麼？我整理成三點。
-第一，邊緣 AI 部署：從手機上的 30 FPS 到 HomeLab，我很熟悉怎麼讓模型在有限的硬體上跑得動，這可以用在水下載具的 AI 模型最佳化。
-第二，電腦視覺：我處理過遮擋、低光造成的不穩定影像，希望延伸到水下影像增強和目標辨識。
-第三，系統實作：我習慣把想法做成真的能用的系統，可以幫實驗室快速做出實驗工具和展示原型。`,
+  `（約 45 秒｜按 → 依序帶出兩個問題，最後一下帶出結論）
+做專題的時候我發現，只要有遮擋、或光線不夠，關節點的信心值就會掉，骨架就開始跳。
+［→］到了水下，問題會更嚴重。第一個是看不清：越深光線衰減越多，畫面會偏藍綠，水裡的懸浮微粒又讓畫面變模糊，所以我想研究影像處理，把畫面還原清楚。
+［→］第二個是跑不動：載具上的算力和電力都有限，通訊也受限，沒辦法把運算丟上雲端。這剛好接上我做過的手機 30 FPS 和 HomeLab，也就是 AI 模型最佳化。
+［→］讓載具在水下自己看得清、也算得動，這就是我想來海下所研究的事。`,
   `（約 45 秒｜每按一次 → 帶出一個階段，最後一下帶出致謝）
 我的讀書計畫分成四個階段。
 ［→］入學前，先把基礎補起來：水中聲學、水下載具，還有訊號與系統。
