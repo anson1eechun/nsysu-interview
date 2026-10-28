@@ -19,12 +19,16 @@ import {
 } from 'react';
 import awardCrossStrait from './assets/award-crossstrait.jpg';
 import awardNational from './assets/award-national.jpg';
+import clubLearn from './assets/club-learn.jpg';
+import clubTeam from './assets/club-team.jpg';
+import clubTogether from './assets/club-together.jpg';
 import headshot from './assets/headshot.jpg';
+import plusrepPoster from './assets/plusrep-poster.jpg';
 import rehabSeated from './assets/rehab-seated.jpg';
-import rehabStanding from './assets/rehab-standing.jpg';
 import appPoster from './assets/zaoxingzhe-poster.jpg';
 
 const appClip = new URL('./assets/zaoxingzhe-clip.mp4', import.meta.url).href;
+const plusrepVideo = new URL('./assets/plusrep.mp4', import.meta.url).href;
 
 // ─── Design tokens ───────────────────────────────────────────────────────────
 
@@ -656,194 +660,79 @@ const Cover: Page = () => {
   );
 };
 
-// ─── 2. 自我介紹 ─────────────────────────────────────────────────────────────
+// ─── Shared video frame (造星者 + 倍伴練) ────────────────────────────────────
+// Live page autoplays muted; thumbnails and print show the poster only.
+// `sound` adds a button that restarts the video with audio — a <button>, so
+// the player's click-to-advance ignores it.
 
-const TL_Y = 420;
-
-const TimelineNode = ({ x, year, delay }: { x: number; year: string; delay: number }) => {
-  const live = useIsActivePage();
-  return (
-    <>
-      <Rise delay={delay} style={{ position: 'absolute', left: x - 140, top: TL_Y - 70, width: 280, textAlign: 'center' }}>
-        <span style={{ fontFamily: MONO, fontSize: 24, color: 'var(--osd-accent)', letterSpacing: '0.06em' }}>{year}</span>
-      </Rise>
-      <motion.div
-        style={{
-          position: 'absolute',
-          left: x - 13,
-          top: TL_Y - 13,
-          width: 26,
-          height: 26,
-          borderRadius: '50%',
-          background: 'var(--osd-bg)',
-          border: '4px solid var(--osd-accent)',
-          boxShadow: '0 0 24px rgba(95,227,224,0.6)',
-        }}
-        initial={live ? { scale: 0 } : false}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 380, damping: 16, delay }}
-      />
-    </>
-  );
-};
-
-const TimelineCard = ({ x, delay, title, children }: { x: number; delay: number; title: string; children: ReactNode }) => (
-  <Rise
-    delay={delay}
-    style={{
-      position: 'absolute',
-      left: x - 195,
-      top: TL_Y + 44,
-      width: 390,
-      padding: '24px 26px',
-      borderRadius: 'var(--osd-radius)',
-      background: panel,
-      border: `1px solid ${line}`,
-    }}
-  >
-    <div style={{ fontSize: 34, fontWeight: 700, lineHeight: 1.3 }}>{title}</div>
-    <div style={{ marginTop: 14 }}>{children}</div>
-  </Rise>
-);
-
-const Choice = ({ label, chosen, delay }: { label: string; chosen: boolean; delay: number }) => {
-  const live = useIsActivePage();
-  return (
-    <motion.div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '6px 16px',
-        marginTop: 10,
-        borderRadius: 10,
-        fontSize: 26,
-        border: `1.5px solid ${chosen ? 'var(--osd-accent)' : 'rgba(147,179,196,0.3)'}`,
-        color: chosen ? 'var(--osd-text)' : dim,
-        background: chosen ? 'rgba(95,227,224,0.12)' : 'transparent',
-      }}
-      initial={live ? { opacity: 0, x: -16 } : false}
-      animate={{ opacity: chosen ? 1 : 0.7, x: 0 }}
-      transition={{ duration: 0.6, delay, ease: EASE }}
-    >
-      <span>{label}</span>
-      <span style={{ color: chosen ? 'var(--osd-accent)' : dim, fontWeight: 700 }}>{chosen ? '✓' : '✕'}</span>
-      {!chosen && (
-        <motion.div
-          style={{ position: 'absolute', left: 14, right: 46, top: '50%', height: 2, background: dim, transformOrigin: 'left' }}
-          initial={live ? { scaleX: 0 } : false}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.5, delay: delay + 0.5, ease: EASE }}
-        />
-      )}
-    </motion.div>
-  );
-};
-
-const Intro: Page = () => {
-  const live = useIsActivePage();
-  return (
-    <Frame depth={30}>
-      <Header no="01" kicker="自我介紹" title="兩次選擇，都跟著興趣走" sub="從高中對程式的憧憬，到龍華資網、再轉學逢甲資工" />
-      <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-        <motion.line
-          x1={PAD}
-          y1={TL_Y}
-          x2={1800}
-          y2={TL_Y}
-          stroke="var(--osd-accent)"
-          strokeOpacity={0.5}
-          strokeWidth={2}
-          initial={live ? { pathLength: 0 } : false}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.6, delay: 0.4, ease: EASE }}
-        />
-      </svg>
-      <TimelineNode x={315} year="高中" delay={0.6} />
-      <TimelineNode x={745} year="112 學年" delay={0.9} />
-      <TimelineNode x={1175} year="113 學年" delay={1.2} />
-      <TimelineNode x={1605} year="現在 · 大四" delay={1.5} />
-
-      <TimelineCard x={315} delay={0.7} title="憧憬寫程式">
-        <p style={{ margin: 0, fontSize: 28, lineHeight: 1.6, color: muted }}>
-          資訊課上看同學輕鬆解題，希望自己也能用程式解決身邊的問題
-        </p>
-      </TimelineCard>
-      <TimelineCard x={745} delay={1.0} title="龍華科大 資網系">
-        <Choice label="東海 歷史學系" chosen={false} delay={1.3} />
-        <Choice label="龍華 資訊網路工程" chosen delay={1.45} />
-        <div style={{ marginTop: 18, fontSize: 26, color: amber, lineHeight: 1.5 }}>
-          大一上 書卷獎
-          <div style={{ fontFamily: MONO, fontSize: 26 }}>
-            班排 <CountUp from={55} to={1} delay={1.6} />/55 · 系排 <CountUp from={107} to={2} delay={1.6} />/107
-          </div>
-        </div>
-      </TimelineCard>
-      <TimelineCard x={1175} delay={1.3} title="轉學 逢甲資工">
-        <Choice label="元智 電機工程學系" chosen={false} delay={1.6} />
-        <Choice label="逢甲 資訊工程學系" chosen delay={1.75} />
-        <p style={{ margin: '18px 0 0', fontSize: 26, lineHeight: 1.5, color: muted }}>
-          為了更完整的課程與更多元的同儕
-        </p>
-      </TimelineCard>
-      <TimelineCard x={1605} delay={1.6} title="研究興趣">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          <Chip>邊緣 AI</Chip>
-          <Chip>電腦視覺</Chip>
-          <Chip>行動應用開發</Chip>
-        </div>
-        <p style={{ margin: '18px 0 0', fontSize: 26, lineHeight: 1.5, color: muted }}>
-          CSEPT 第一級 204 分
-          <br />
-          （CEFR B1）
-        </p>
-      </TimelineCard>
-
-      <Rise delay={2.1} style={{ position: 'absolute', left: PAD, top: 880, display: 'flex', alignItems: 'baseline', gap: 20 }}>
-        <span style={{ fontSize: 80, lineHeight: 0.5, color: 'var(--osd-accent)', fontWeight: 900 }}>“</span>
-        <span style={{ fontSize: 40, fontWeight: 700, letterSpacing: '0.04em' }}>
-          不用很厲害才開始，<span style={{ color: 'var(--osd-accent)' }}>要開始才能很厲害。</span>
-        </span>
-      </Rise>
-    </Frame>
-  );
-};
-
-// ─── 3. 大學專題 ─────────────────────────────────────────────────────────────
-
-const PhotoTile = ({
+const VideoFrame = ({
   src,
+  poster,
+  alt,
   label,
-  delay,
-  style,
+  left,
+  top,
+  width,
+  height,
+  sound = false,
 }: {
   src: string;
+  poster: string;
+  alt: string;
   label: string;
-  delay: number;
-  style?: CSSProperties;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  sound?: boolean;
 }) => {
   const live = useIsActivePage();
+  const ref = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(true);
+  const toggleSound = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (muted) {
+      v.currentTime = 0;
+      v.muted = false;
+      void v.play();
+    } else {
+      v.muted = true;
+    }
+    setMuted(!muted);
+  };
   return (
     <Rise
-      delay={delay}
+      delay={0.5}
+      y={40}
       style={{
-        position: 'relative',
+        position: 'absolute',
+        left,
+        top,
+        width,
+        height,
+        borderRadius: 24,
+        border: '10px solid #0d2333',
+        outline: `1px solid ${line}`,
+        background: '#000',
         overflow: 'hidden',
-        borderRadius: 'var(--osd-radius)',
-        border: `1px solid ${line}`,
-        boxShadow: '0 24px 60px rgba(0,0,0,0.45)',
-        ...style,
+        boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(95,227,224,0.12)',
       }}
     >
-      <motion.img
-        src={src}
-        alt={label}
-        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        initial={live ? { scale: 1.15 } : false}
-        animate={{ scale: 1 }}
-        transition={{ duration: 2.4, delay, ease: EASE }}
-      />
+      {live ? (
+        <video
+          ref={ref}
+          src={src}
+          poster={poster}
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <img src={poster} alt={alt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+      )}
       <span
         style={{
           position: 'absolute',
@@ -852,140 +741,134 @@ const PhotoTile = ({
           padding: '4px 12px',
           borderRadius: 8,
           fontFamily: MONO,
-          fontSize: 22,
+          fontSize: 20,
           background: 'rgba(2,12,22,0.75)',
-          color: 'var(--osd-accent)',
+          color: amber,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
         }}
       >
+        <motion.span
+          style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff6b6b', display: 'inline-block' }}
+          animate={live ? { opacity: [1, 0.2, 1] } : { opacity: 1 }}
+          transition={{ duration: 1.4, repeat: Infinity }}
+        />
         {label}
       </span>
+      {sound && live && (
+        <button
+          type="button"
+          onClick={toggleSound}
+          style={{
+            position: 'absolute',
+            right: 16,
+            bottom: 14,
+            padding: '6px 16px',
+            borderRadius: 999,
+            border: `1.5px solid ${muted ? line : amber}`,
+            background: 'rgba(2,12,22,0.8)',
+            color: muted ? 'var(--osd-text)' : amber,
+            fontFamily: 'var(--osd-font-body)',
+            fontSize: 20,
+            cursor: 'pointer',
+          }}
+        >
+          {muted ? '▶ 有聲播放' : '■ 靜音'}
+        </button>
+      )}
     </Rise>
   );
 };
 
-const PoseDemo = () => {
+// ─── 2. 自我介紹：夥伴帶給我的 ───────────────────────────────────────────────
+
+const ValueCard = ({
+  photo,
+  kicker,
+  title,
+  desc,
+  delay,
+}: {
+  photo: string;
+  kicker: string;
+  title: string;
+  desc: string;
+  delay: number;
+}) => {
   const live = useIsActivePage();
-  const [theta, setTheta] = useState(live ? 15 : 158);
-  const [reps, setReps] = useState(live ? 0 : 7);
-  const raised = useRef(false);
-  useAnimationFrame((t) => {
-    if (!live) return;
-    const p = (1 - Math.cos((t / 2800) * Math.PI * 2)) / 2;
-    const th = 15 + p * 150;
-    setTheta(th);
-    if (th > 150 && !raised.current) {
-      raised.current = true;
-      setReps((r) => (r % 10) + 1);
-    }
-    if (th < 60) raised.current = false;
-  });
-  const rad = (theta * Math.PI) / 180;
-  const R = { x: 152, y: 140 };
-  const L = { x: 88, y: 140 };
-  const armR = (len: number) => ({ x: R.x + Math.sin(rad) * len, y: R.y + Math.cos(rad) * len });
-  const armL = (len: number) => ({ x: L.x - Math.sin(rad) * len, y: L.y + Math.cos(rad) * len });
-  const pts = {
-    head: { x: 120, y: 92 },
-    neck: { x: 120, y: 124 },
-    hipL: { x: 100, y: 240 },
-    hipR: { x: 140, y: 240 },
-    kneeL: { x: 98, y: 310 },
-    kneeR: { x: 142, y: 310 },
-    ankL: { x: 96, y: 372 },
-    ankR: { x: 144, y: 372 },
-  };
-  const bones: [{ x: number; y: number }, { x: number; y: number }][] = [
-    [L, R],
-    [pts.neck, pts.head],
-    [L, pts.hipL],
-    [R, pts.hipR],
-    [pts.hipL, pts.hipR],
-    [pts.hipL, pts.kneeL],
-    [pts.kneeL, pts.ankL],
-    [pts.hipR, pts.kneeR],
-    [pts.kneeR, pts.ankR],
-    [R, armR(52)],
-    [armR(52), armR(104)],
-    [L, armL(52)],
-    [armL(52), armL(104)],
-  ];
-  const joints = [L, R, pts.hipL, pts.hipR, pts.kneeL, pts.kneeR, pts.ankL, pts.ankR, armR(52), armR(104), armL(52), armL(104)];
-  const arcEnd = { x: R.x + Math.sin(rad) * 34, y: R.y + Math.cos(rad) * 34 };
-  const ok = theta >= 150;
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: 480,
-        height: 400,
-        borderRadius: 'var(--osd-radius)',
-        border: `1px solid ${line}`,
-        background: panel,
-        display: 'flex',
-      }}
-    >
-      <svg width={250} height={400} viewBox="0 0 250 400">
-        <path
-          d={`M${R.x} ${R.y + 34} A34 34 0 0 0 ${arcEnd.x} ${arcEnd.y}`}
-          fill="none"
-          stroke={amber}
-          strokeWidth={3}
+    <Rise delay={delay} y={40} style={{ width: 533 }}>
+      <div
+        style={{
+          height: 340,
+          borderRadius: 'var(--osd-radius)',
+          overflow: 'hidden',
+          border: `1px solid ${line}`,
+          boxShadow: '0 24px 60px rgba(0,0,0,0.45)',
+        }}
+      >
+        <motion.img
+          src={photo}
+          alt={title}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          initial={live ? { scale: 1.15 } : false}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2.4, delay, ease: EASE }}
         />
-        {bones.map(([a, b], i) => (
-          <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#5fe3e0" strokeWidth={4} strokeLinecap="round" opacity={0.85} />
-        ))}
-        <circle cx={pts.head.x} cy={pts.head.y} r={20} fill="none" stroke="#5fe3e0" strokeWidth={4} />
-        {joints.map((j, i) => (
-          <circle key={i} cx={j.x} cy={j.y} r={6} fill="#e7f5f9" stroke="#5fe3e0" strokeWidth={3} />
-        ))}
-      </svg>
-      <div style={{ paddingTop: 34, fontFamily: MONO }}>
-        <div style={{ fontFamily: 'var(--osd-font-body)', fontSize: 22, color: muted }}>肩關節角度</div>
-        <div style={{ fontSize: 64, fontWeight: 600, color: ok ? amber : 'var(--osd-text)', lineHeight: 1.15 }}>
-          {Math.round(theta)}°
-        </div>
-        <div style={{ width: 190, height: 8, marginTop: 10, borderRadius: 4, background: 'rgba(147,179,196,0.2)' }}>
-          <div
-            style={{
-              width: `${Math.min(theta / 150, 1) * 100}%`,
-              height: '100%',
-              borderRadius: 4,
-              background: ok ? amber : 'var(--osd-accent)',
-            }}
-          />
-        </div>
-        <div
-          style={{
-            marginTop: 18,
-            display: 'inline-block',
-            padding: '4px 14px',
-            borderRadius: 8,
-            fontFamily: 'var(--osd-font-body)',
-            fontSize: 24,
-            color: ok ? '#04121f' : dim,
-            background: ok ? amber : 'transparent',
-            border: `1.5px solid ${ok ? amber : 'rgba(147,179,196,0.35)'}`,
-          }}
-        >
-          {ok ? '達標 ✓' : '目標 150°'}
-        </div>
-        <div style={{ marginTop: 26, fontFamily: 'var(--osd-font-body)', fontSize: 22, color: muted }}>自動計次</div>
-        <div style={{ fontSize: 44, fontWeight: 600 }}>
-          {reps}
-          <span style={{ fontSize: 26, color: dim }}> / 10</span>
-        </div>
       </div>
-      <span style={{ position: 'absolute', left: 16, top: 12, fontFamily: MONO, fontSize: 20, color: dim }}>
-        向量夾角判斷（示意）
-      </span>
-    </div>
+      <div style={{ marginTop: 22, fontFamily: MONO, fontSize: 24, letterSpacing: '0.08em', color: 'var(--osd-accent)' }}>
+        {kicker}
+      </div>
+      <div style={{ marginTop: 4, fontSize: 38, fontWeight: 700, lineHeight: 1.3 }}>{title}</div>
+      <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.55, color: muted }}>{desc}</div>
+    </Rise>
   );
 };
 
+const Intro: Page = () => (
+  <Frame depth={30}>
+    <Header
+      no="01"
+      kicker="自我介紹"
+      title="不用很厲害才開始，要開始才能很厲害"
+      sub="學長的一句話，也是和社團夥伴一起學習、一起比賽後，我最大的收穫"
+    />
+    <div style={{ position: 'absolute', left: PAD, top: 330, display: 'flex', gap: 40 }}>
+      <ValueCard
+        photo={clubLearn}
+        kicker="一起學習"
+        title="把想法講清楚"
+        desc="上台分享、互相試教回饋，看見自己表達上的盲點"
+        delay={0.6}
+      />
+      <ValueCard
+        photo={clubTeam}
+        kicker="一起比賽"
+        title="把想法做出來"
+        desc="和夥伴組隊投入專題與競賽，決賽前一起密集修正、一起上台"
+        delay={0.85}
+      />
+      <ValueCard
+        photo={clubTogether}
+        kicker="一起走出去"
+        title="和不同的人合作"
+        desc="一起參加技術活動與交流，學會和不同背景的人溝通"
+        delay={1.1}
+      />
+    </div>
+    <Rise delay={1.6} style={{ position: 'absolute', left: PAD, top: 906, fontSize: 30, fontWeight: 500 }}>
+      接下來的每一件作品，都是和這群夥伴<span style={{ color: 'var(--osd-accent)' }}>一起做出來的</span> →
+    </Rise>
+  </Frame>
+);
+
+// ─── 3. 專題 × 競賽作品：倍伴練 ──────────────────────────────────────────────
+
 const Stat = ({ delay, value, label }: { delay: number; value: ReactNode; label: string }) => (
-  <Rise delay={delay} style={{ flex: 1, borderTop: `2px solid ${line}`, paddingTop: 16 }}>
-    <div style={{ fontFamily: MONO, fontSize: 64, fontWeight: 600, lineHeight: 1.1, color: 'var(--osd-accent)' }}>{value}</div>
-    <div style={{ marginTop: 8, fontSize: 26, color: muted }}>{label}</div>
+  <Rise delay={delay} style={{ borderTop: `2px solid ${line}`, paddingTop: 12 }}>
+    <div style={{ fontFamily: MONO, fontSize: 56, fontWeight: 600, lineHeight: 1.1, color: 'var(--osd-accent)' }}>{value}</div>
+    <div style={{ marginTop: 4, fontSize: 24, color: muted }}>{label}</div>
   </Rise>
 );
 
@@ -993,52 +876,56 @@ const Project: Page = () => (
   <Frame depth={60}>
     <Header
       no="02"
-      kicker="學術活動 ｜ 大學專題"
-      title="讓平板即時看懂復健動作"
-      sub="基於 TensorFlow 邊緣端點之即時骨架動態感知系統 ｜ 指導教授：林峰正 副教授"
+      kicker="學術活動 ｜ 專題 × 競賽作品"
+      title="倍伴練：讓平板即時看懂復健動作"
+      sub="大學專題：基於 TensorFlow 邊緣端點之即時骨架動態感知系統 ｜ 指導教授：林峰正 副教授"
     />
-    <div style={{ position: 'absolute', left: PAD, top: 340, display: 'flex', gap: 40 }}>
-      <PhotoTile src={rehabStanding} label="實機畫面 · 站姿" delay={0.5} style={{ width: 560, height: 400 }} />
-      <PhotoTile src={rehabSeated} label="實機畫面 · 坐姿" delay={0.7} style={{ width: 560, height: 400 }} />
-      <Rise delay={0.9}>
-        <PoseDemo />
-      </Rise>
-    </div>
-    <div style={{ position: 'absolute', left: PAD, top: 784, width: 1160, display: 'flex', gap: 40 }}>
+    <VideoFrame
+      src={plusrepVideo}
+      poster={plusrepPoster}
+      alt="倍伴練 PlusRep 介紹影片"
+      label="倍伴練 PlusRep · 介紹影片"
+      left={PAD}
+      top={330}
+      width={1040}
+      height={585}
+      sound
+    />
+    <div style={{ position: 'absolute', left: 1220, top: 330, width: 580, display: 'flex', flexDirection: 'column', gap: 18 }}>
       <Stat
-        delay={1.2}
+        delay={0.9}
         value={
           <>
-            <CountUp to={30} delay={1.2} /> FPS
+            <CountUp to={30} delay={0.9} /> FPS
           </>
         }
-        label="中階手機（Snapdragon 695）"
+        label="中階手機（Snapdragon 695）即時推論"
       />
       <Stat
-        delay={1.35}
+        delay={1.05}
         value={
           <>
-            <CountUp to={18} delay={1.35} />–<CountUp to={25} delay={1.35} /> ms
+            <CountUp to={18} delay={1.05} />–<CountUp to={25} delay={1.05} /> ms
           </>
         }
         label="單幀骨架推論時間"
       />
       <Stat
-        delay={1.5}
+        delay={1.2}
         value={
           <>
-            &lt; <CountUp from={3} to={0.5} decimals={1} delay={1.5} /> s
+            &lt; <CountUp from={3} to={0.5} decimals={1} delay={1.2} /> s
           </>
         }
         label="錯誤姿勢 → 語音提醒"
       />
     </div>
-    <Rise delay={1.7} style={{ position: 'absolute', left: 1320, top: 784, width: 480 }}>
-      <div style={{ fontSize: 26, lineHeight: 1.65, color: muted }}>
-        <div>▸ BlazePose ＋ MoveNet 擷取關節點</div>
-        <div>▸ 遮蔽幀線性插補，穩定追蹤</div>
-        <div>▸ 本地 LLM 陪伴問答，不上傳隱私</div>
-        <div>▸ 國台客語語音提醒</div>
+    <Rise delay={1.5} style={{ position: 'absolute', left: 1220, top: 736, width: 580 }}>
+      <div style={{ fontSize: 26, lineHeight: 1.6, color: muted }}>
+        <div>▸ BlazePose ＋ MoveNet，iPad 本機運算</div>
+        <div>▸ 向量夾角判斷關節角度、自動計次</div>
+        <div>▸ 小伴 AI：本機對話、台語鼓勵</div>
+        <div>▸ 患者・家屬・醫師 三端同步</div>
       </div>
     </Rise>
   </Frame>
@@ -1304,67 +1191,6 @@ const TechItem = ({
   </Rise>
 );
 
-const AppDemo = () => {
-  const live = useIsActivePage();
-  return (
-    <Rise
-      delay={0.5}
-      y={40}
-      style={{
-        position: 'absolute',
-        left: PAD,
-        top: 340,
-        width: 992,
-        height: 558,
-        padding: 0,
-        borderRadius: 24,
-        border: '10px solid #0d2333',
-        outline: `1px solid ${line}`,
-        background: '#000',
-        overflow: 'hidden',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.6), 0 0 60px rgba(95,227,224,0.12)',
-      }}
-    >
-      {live ? (
-        <video
-          src={appClip}
-          poster={appPoster}
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
-      ) : (
-        <img src={appPoster} alt="造星者 App 畫面" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-      )}
-      <span
-        style={{
-          position: 'absolute',
-          left: 16,
-          top: 14,
-          padding: '4px 12px',
-          borderRadius: 8,
-          fontFamily: MONO,
-          fontSize: 20,
-          background: 'rgba(2,12,22,0.75)',
-          color: amber,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-        }}
-      >
-        <motion.span
-          style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff6b6b', display: 'inline-block' }}
-          animate={live ? { opacity: [1, 0.2, 1] } : { opacity: 1 }}
-          transition={{ duration: 1.4, repeat: Infinity }}
-        />
-        DEMO · 造星者
-      </span>
-    </Rise>
-  );
-};
-
 const AppWork: Page = () => (
   <Frame depth={150}>
     <Header
@@ -1373,7 +1199,16 @@ const AppWork: Page = () => (
       title="讓 App 知道孩子有沒有在看"
       sub="造星者：兒童專注力訓練 App ｜ 2026 行動應用創新賽 ｜ 負責主要程式設計與美術設計"
     />
-    <AppDemo />
+    <VideoFrame
+      src={appClip}
+      poster={appPoster}
+      alt="造星者 App 畫面"
+      label="DEMO · 造星者"
+      left={PAD}
+      top={340}
+      width={992}
+      height={558}
+    />
     <div style={{ position: 'absolute', left: 1160, top: 340, width: 640, display: 'flex', flexDirection: 'column', gap: 26 }}>
       <TechItem icon={<EyeIcon />} title="MediaPipe 虹膜偵測" desc="網頁端即時追蹤雙眼位置" delay={0.8} />
       <TechItem icon={<TabletIcon />} title="自寫 ARKit 外掛" desc="iPad 上把視線投影到螢幕平面" delay={0.95} />
@@ -1932,16 +1767,18 @@ export const notes: (string | undefined)[] = [
 我這幾年做的事可以濃縮成一句話：讓 AI 在手機、平板這類資源有限的裝置上，即時看懂人。
 今天想跟老師分享，我為什麼想把它帶到海下。`,
   `（約 40 秒）
-我的求學路上做過兩次選擇，都是跟著興趣走。
-高中時，我在資訊課看到同學輕鬆解出程式題，很憧憬這樣的能力，也希望能用程式解決身邊的問題。
-學測放榜後，我在東海歷史系和龍華科大資網系之間選了資網，大一上就拿到班排第一、系排第二的書卷獎，確認自己適合這條路。
-之後為了更完整的課程與更多元的同儕，我參加轉學考，在元智電機和逢甲資工之間，再次選擇了資工。
-我很喜歡一句話：不用很厲害才開始，要開始才能很厲害。接下來分享我開始之後做了哪些事。`,
-  `（約 40 秒）
-這是我的大學專題，由林峰正老師指導。
-我們用 BlazePose 和 MoveNet 在平板上即時擷取人體關節點，透過向量夾角計算關節角度，判斷復健動作有沒有做到位並自動計次。
+對我影響最大的，是和社團夥伴一起度過的時間。
+學長說過一句話：不用很厲害才開始，要開始才能很厲害。這句話一直陪著我。
+我們一起學習：上台分享、互相試教回饋，讓我看見自己表達上的盲點，學會把想法講清楚；
+我們也一起組隊比賽，決賽前一起密集修正、一起上台，讓我學會把想法做成別人真正能用的作品；
+一起參加技術活動，也讓我學會和不同背景的人溝通、合作。
+接下來的每一件作品，都是和這群夥伴一起做出來的。`,
+  `（約 45 秒｜影片靜音自動播放，邊播邊講）
+這是我的大學專題，由林峰正老師指導，也是我們的競賽作品「倍伴練」。
+我們用 BlazePose 和 MoveNet 在平板上即時擷取人體關節點，透過向量夾角計算關節角度，判斷復健動作有沒有做到位並自動計次——不用穿戴裝置，鏡頭就能看懂動作。
 在 Snapdragon 695 的中階手機上，單幀推論約 18 到 25 毫秒，維持 30 FPS；從錯誤姿勢到語音提醒不到 0.5 秒。
-系統也導入本地端語言模型和國台客語語音提醒，影像不必上傳雲端。`,
+系統也導入本地端 AI「小伴」用台語鼓勵患者，並讓患者、家屬、醫師三端同步；影像都在 iPad 本機運算，不必上傳雲端。
+（若時間允許或老師想看，可按影片右下角「有聲播放」）`,
   `（約 35 秒）
 同一個主題，我們也帶去比賽。
 第一次參賽，就在全國電子設計創意競賽，從 33 支決賽隊伍中拿到季軍；
