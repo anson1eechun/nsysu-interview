@@ -665,6 +665,14 @@ const Cover: Page = () => {
             <Chip>行動應用開發</Chip>
           </div>
         </Rise>
+        <Rise delay={1.9}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginTop: 44, fontFamily: MONO, fontSize: 24 }}>
+            <span style={{ color: dim }}>線上簡報</span>
+            <a href={SITE_URL} target="_blank" rel="noopener" style={{ color: 'var(--osd-accent)', textDecoration: 'none' }}>
+              {SITE_URL.replace('https://', '')}
+            </a>
+          </div>
+        </Rise>
       </div>
       <Porthole />
       <motion.div
