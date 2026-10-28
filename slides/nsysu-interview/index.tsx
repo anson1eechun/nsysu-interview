@@ -1734,6 +1734,9 @@ const StudyPlan: Page = () => {
 
 // ─── Deck ────────────────────────────────────────────────────────────────────
 
+// Shared with slides/nsysu-interview-7a, which swaps in another page 7 for comparison.
+export { amber, dim, EASE, Frame, Header, line, MONO, muted, PAD, panel, rand, Rise, unblur, useStepShown };
+
 export const transition: SlideTransition = {
   duration: 280,
   exit: { duration: 280, easing: 'cubic-bezier(0.4, 0, 1, 1)', keyframes: [{ opacity: 1 }, { opacity: 1 }] },

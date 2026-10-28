@@ -32,10 +32,12 @@ jobs:
           OPEN_SLIDE_BASE="$BASE" npm run build
       - name: SPA fallbacks for deep links
         run: |
-          mkdir -p dist/s/nsysu-interview/presenter
           cp dist/index.html dist/404.html
-          cp dist/index.html dist/s/nsysu-interview/index.html
-          cp dist/index.html dist/s/nsysu-interview/presenter/index.html
+          for deck in nsysu-interview nsysu-interview-7a; do
+            mkdir -p "dist/s/$deck/presenter"
+            cp dist/index.html "dist/s/$deck/index.html"
+            cp dist/index.html "dist/s/$deck/presenter/index.html"
+          done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
