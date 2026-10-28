@@ -50,6 +50,8 @@ const line = 'rgba(95, 227, 224, 0.28)';
 const panel = 'rgba(5, 28, 44, 0.62)';
 const PAD = 120;
 const EASE = [0.22, 1, 0.36, 1] as const;
+// The cover's name and photo link here (also carried into the PDF/PPTX exports).
+const SITE_URL = 'https://anson1eechun.github.io/nsysu-interview/s/nsysu-interview/';
 
 // ─── Fonts + ambient keyframes (injected once per document) ─────────────────
 
@@ -95,6 +97,11 @@ const rand = (i: number) => {
   return x - Math.floor(x);
 };
 
+// Entrances blur in, but must settle on no filter at all: a lingering
+// `blur(0px)` makes Chrome's PDF export rasterise the whole subtree.
+const unblur = (live: boolean) =>
+  live ? { filter: 'blur(0px)', transitionEnd: { filter: 'none' } } : {};
+
 const Rise = ({
   delay = 0,
   y = 28,
@@ -111,7 +118,7 @@ const Rise = ({
     <motion.div
       style={style}
       initial={live ? { opacity: 0, y, filter: 'blur(8px)' } : false}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      animate={{ opacity: 1, y: 0, ...unblur(live) }}
       transition={{ duration: 0.8, delay, ease: EASE }}
     >
       {children}
@@ -136,7 +143,7 @@ const SplitText = ({
           key={i}
           style={{ display: 'inline-block', whiteSpace: 'pre' }}
           initial={live ? { opacity: 0, y: '0.45em', filter: 'blur(10px)' } : false}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          animate={{ opacity: 1, y: 0, ...unblur(live) }}
           transition={{ duration: 0.7, delay: delay + i * stagger, ease: EASE }}
         >
           {ch}
@@ -224,12 +231,10 @@ const Ocean = ({ depth }: { depth: number }) => {
               transformOrigin: 'top center',
               '--r': `${ray.r}deg`,
               transform: `rotate(${ray.r}deg)`,
-              // Soft edges come from gradients + mask, not filter: blur — the
-              // thumbnail rail mounts every page, and blurred 1300px layers are costly.
+              // Soft edges come from one radial gradient — no filter: blur (costly on
+              // the thumbnail rail) and no mask-image (rasterised into huge PDF bitmaps).
               background:
-                'linear-gradient(90deg, rgba(185,242,255,0), rgba(185,242,255,0.55) 50%, rgba(185,242,255,0))',
-              maskImage: 'linear-gradient(180deg, #000 0%, transparent 72%)',
-              WebkitMaskImage: 'linear-gradient(180deg, #000 0%, transparent 72%)',
+                'radial-gradient(ellipse 50% 72% at 50% 0%, rgba(185,242,255,0.55), rgba(185,242,255,0) 100%)',
               opacity: rayOpacity,
               willChange: live ? 'transform' : undefined,
               animation: live ? `dv-sway ${11 + i * 2}s ease-in-out ${-i * 3}s infinite` : 'none',
@@ -532,10 +537,14 @@ const Porthole = () => {
             animation: live ? 'dv-spin 50s linear infinite' : 'none',
           }}
         />
-        <div
+        <a
+          href={SITE_URL}
+          target="_blank"
+          rel="noopener"
           style={{
             position: 'absolute',
             inset: 56,
+            display: 'block',
             borderRadius: '50%',
             padding: 18,
             background: 'linear-gradient(145deg, #4c6b7b, #142836 55%, #5b7f90)',
@@ -555,7 +564,7 @@ const Porthole = () => {
               boxShadow: 'inset 0 0 40px rgba(0,0,0,0.6)',
             }}
           />
-        </div>
+        </a>
         {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
           <div
             key={a}
@@ -576,6 +585,7 @@ const Porthole = () => {
             inset: 74,
             borderRadius: '50%',
             background: 'linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 42%)',
+            pointerEvents: 'none',
           }}
         />
       </motion.div>
@@ -604,7 +614,9 @@ const Cover: Page = () => {
             letterSpacing: '0.08em',
           }}
         >
-          <SplitText text="李鈞盛" delay={0.3} stagger={0.14} />
+          <a href={SITE_URL} target="_blank" rel="noopener" style={{ color: 'inherit', textDecoration: 'none' }}>
+            <SplitText text="李鈞盛" delay={0.3} stagger={0.14} />
+          </a>
         </h1>
         <Rise delay={0.8}>
           <p style={{ margin: '16px 0 0', fontSize: 40, lineHeight: 1.4, color: muted }}>
@@ -1464,7 +1476,7 @@ const LandPanel = () => {
 const SeaPanel = () => {
   const live = useIsActivePage();
   const [ref, shown] = useStepShown();
-  const show = shown ? { opacity: 1, x: 0, filter: 'blur(0px)' } : { opacity: 0, x: 40, filter: 'blur(8px)' };
+  const show = shown ? { opacity: 1, x: 0, ...unblur(live) } : { opacity: 0, x: 40, filter: 'blur(8px)' };
   return (
     <motion.div
       ref={ref}
