@@ -1,15 +1,15 @@
 // Comparison copy of slides/nsysu-interview: every page is shared with the main
 // deck except page 7, which tells the "two underwater problems" story instead
-// of "what I can bring to the lab". Edit text on the other pages in the main deck.
+// of "what I can bring to the lab". The editor saves text into the file of the
+// deck being viewed, so edit the other pages in the main deck, not here.
 import { type Page, type SlideMeta, Step, Steps, useIsActivePage } from '@open-slide/core';
 import { motion, useAnimationFrame } from 'motion/react';
-import { type CSSProperties, type ReactNode, useRef, useState } from 'react';
+import { type CSSProperties, type ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import deck, {
   amber,
   dim,
   EASE,
   Frame,
-  Header,
   line,
   MONO,
   muted,
@@ -34,6 +34,54 @@ const PROB_W = 520;
 const PROB_GAP = 40;
 const VIS_W = PROB_W - 48;
 const VIS_H = 210;
+
+// Same as the main deck's Header, but written in this file so the editor can
+// save edits to page 7's title here.
+const Header = ({ no, kicker, title, sub }: { no: string; kicker: string; title: string; sub?: string }) => {
+  const live = useIsActivePage();
+  return (
+    <div style={{ position: 'absolute', left: PAD, top: 96, right: 260 }}>
+      <Rise delay={0.05}>
+        <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.12em', color: 'var(--osd-accent)' }}>
+          <span>{no}</span> <span style={{ color: dim }}>//</span> <span>{kicker}</span>
+        </div>
+      </Rise>
+      <motion.div
+        initial={live ? { opacity: 0, y: 24, filter: 'blur(10px)', clipPath: 'inset(-25% 100% -25% 0%)' } : false}
+        animate={
+          live
+            ? {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                clipPath: 'inset(-25% 0% -25% 0%)',
+                transitionEnd: { filter: 'none', clipPath: 'none' },
+              }
+            : {}
+        }
+        transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
+      >
+        <h2
+          style={{
+            margin: '18px 0 0',
+            fontFamily: 'var(--osd-font-display)',
+            fontSize: 68,
+            fontWeight: 900,
+            lineHeight: 1.2,
+            letterSpacing: '0.01em',
+          }}
+        >
+          {title}
+        </h2>
+      </motion.div>
+      {sub && (
+        <Rise delay={0.45}>
+          <p style={{ margin: '14px 0 0', fontSize: 28, lineHeight: 1.5, color: muted }}>{sub}</p>
+        </Rise>
+      )}
+    </div>
+  );
+};
 
 const LandPanel = () => {
   const live = useIsActivePage();
@@ -354,14 +402,16 @@ const Squeeze = () => {
 const Problem = ({
   i,
   title,
-  causes,
+  cause1,
+  cause2,
   field,
   did,
   children,
 }: {
   i: number;
   title: string;
-  causes: ReactNode;
+  cause1: string;
+  cause2: string;
   field: string;
   did: string;
   children: ReactNode;
@@ -390,10 +440,17 @@ const Problem = ({
         <span style={{ fontSize: 42, fontWeight: 900 }}>{title}</span>
       </div>
       <div style={{ marginTop: 12 }}>{children}</div>
-      <div style={{ marginTop: 12, fontSize: 24, lineHeight: 1.5, color: muted }}>{causes}</div>
+      <div style={{ marginTop: 12, fontSize: 24, lineHeight: 1.5, color: muted }}>
+        <div>{cause1}</div>
+        <div>{cause2}</div>
+      </div>
       <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${line}` }}>
-        <div style={{ fontSize: 30, fontWeight: 700, color: amber }}>我想研究 ▸ {field}</div>
-        <div style={{ marginTop: 4, fontSize: 22, color: dim }}>我做過：{did}</div>
+        <div style={{ fontSize: 30, fontWeight: 700, color: amber }}>
+          我想研究 ▸ <span>{field}</span>
+        </div>
+        <div style={{ marginTop: 4, fontSize: 22, color: dim }}>
+          我做過：<span>{did}</span>
+        </div>
       </div>
     </motion.div>
   );
@@ -410,66 +467,94 @@ const Conclusion = () => {
       animate={shown ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
       transition={{ duration: 0.8, ease: EASE }}
     >
-      讓載具在水下自己看得清、也算得動 —— <span style={{ color: 'var(--osd-accent)' }}>這就是我想來海下所研究的事。</span>
+      <span>
+        讓載具在水下自己看得清、也算得動 —— <span style={{ color: 'var(--osd-accent)' }}>這就是我想來海下所研究的事。</span>
+      </span>
     </motion.div>
   );
 };
 
 const Underwater: Page = () => (
   <Frame depth={300}>
-    <Header no="06" kicker="研究動機" title="到了水下，有兩個問題：看不清、跑不動" sub="專題裡遇過的問題，到了水下會更嚴重" />
-    <LandPanel />
-    <Steps>
-      <Step duration={1}>
-        <ToSea />
-        <Problem
-          i={0}
-          title="看不清"
-          field="影像處理"
-          did="遮蔽幀插補、虹膜偵測與校準"
-          causes={
-            <>
-              光線隨深度衰減 → 畫面偏藍綠
-              <br />
-              懸浮微粒、低光 → 模糊、雜訊
-            </>
-          }
-        >
-          <Murky />
-        </Problem>
-      </Step>
-      <Step duration={1}>
-        <Problem
-          i={1}
-          title="跑不動"
-          field="AI 模型最佳化"
-          did="手機 30 FPS、HomeLab 分層推論"
-          causes={
-            <>
-              載具上算力、電力都有限
-              <br />
-              通訊受限 → 不能丟上雲端
-            </>
-          }
-        >
-          <Squeeze />
-        </Problem>
-      </Step>
-      <Step duration={1}>
-        <Conclusion />
-      </Step>
-    </Steps>
+    <div data-own-source style={{ display: 'contents' }}>
+      <Header no="06" kicker="研究動機" title="到了水下，有兩個問題：看不清、跑不動" sub="專題裡遇過的問題，到了水下會更嚴重" />
+      <LandPanel />
+      <Steps>
+        <Step duration={1}>
+          <ToSea />
+          <Problem
+            i={0}
+            title="看不清"
+            field="影像處理"
+            did="遮蔽幀插補、虹膜偵測與校準"
+            cause1="光線隨深度衰減 → 畫面偏藍綠"
+            cause2="懸浮微粒、低光 → 模糊、雜訊"
+          >
+            <Murky />
+          </Problem>
+        </Step>
+        <Step duration={1}>
+          <Problem
+            i={1}
+            title="跑不動"
+            field="AI 模型最佳化"
+            did="手機 30 FPS、HomeLab 分層推論"
+            cause1="載具上算力、電力都有限"
+            cause2="通訊受限 → 不能丟上雲端"
+          >
+            <Squeeze />
+          </Problem>
+        </Step>
+        <Step duration={1}>
+          <Conclusion />
+        </Step>
+      </Steps>
+    </div>
   </Frame>
 );
 
 // ─── Deck ────────────────────────────────────────────────────────────────────
+
+// The editor saves an edit into the file of the deck on screen, using the line
+// number tagged on the clicked element. Elements drawn by the main deck's code
+// carry line numbers from *that* file, so strip their tags here; only page 7's
+// own content (inside [data-own-source]) stays editable in this deck.
+const EditGuard = ({ children }: { children: ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const root = ref.current;
+    if (!root) return;
+    const strip = () => {
+      for (const el of root.querySelectorAll('[data-slide-loc]')) {
+        if (!el.closest('[data-own-source]')) el.removeAttribute('data-slide-loc');
+      }
+    };
+    strip();
+    const mo = new MutationObserver(strip);
+    mo.observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-slide-loc'] });
+    return () => mo.disconnect();
+  }, []);
+  return (
+    <div ref={ref} style={{ display: 'contents' }}>
+      {children}
+    </div>
+  );
+};
+
+const guarded =
+  (P: Page): Page =>
+  () => (
+    <EditGuard>
+      <P />
+    </EditGuard>
+  );
 
 export const meta: SlideMeta = {
   title: '李鈞盛｜中山海下所 甄試面試（第 7 頁 A 版）',
   createdAt: '2026-10-28T13:05:00.000Z',
 };
 
-export default [...deck.slice(0, 6), Underwater, ...deck.slice(7)] satisfies Page[];
+export default [...deck.slice(0, 6), Underwater, ...deck.slice(7)].map(guarded) satisfies Page[];
 
 export const notes: (string | undefined)[] = baseNotes.map((note, i) =>
   i === 6

@@ -419,32 +419,53 @@ const Frame = ({ depth, children }: { depth: number; children: ReactNode }) => (
   </MotionConfig>
 );
 
-const Header = ({ no, kicker, title, sub }: { no: string; kicker: string; title: string; sub?: string }) => (
-  <div style={{ position: 'absolute', left: PAD, top: 96, right: 260 }}>
-    <Rise delay={0.05}>
-      <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.12em', color: 'var(--osd-accent)' }}>
-        {no} <span style={{ color: dim }}>//</span> {kicker}
-      </div>
-    </Rise>
-    <h2
-      style={{
-        margin: '18px 0 0',
-        fontFamily: 'var(--osd-font-display)',
-        fontSize: 68,
-        fontWeight: 900,
-        lineHeight: 1.2,
-        letterSpacing: '0.01em',
-      }}
-    >
-      <SplitText text={title} delay={0.15} />
-    </h2>
-    {sub && (
-      <Rise delay={0.45}>
-        <p style={{ margin: '14px 0 0', fontSize: 28, lineHeight: 1.5, color: muted }}>{sub}</p>
+// The editor saves a text edit by following a plain `{prop}` back to the page's
+// <Header prop="…"> call, so each piece of text sits alone in its own element.
+const Header = ({ no, kicker, title, sub }: { no: string; kicker: string; title: string; sub?: string }) => {
+  const live = useIsActivePage();
+  return (
+    <div style={{ position: 'absolute', left: PAD, top: 96, right: 260 }}>
+      <Rise delay={0.05}>
+        <div style={{ fontFamily: MONO, fontSize: 24, letterSpacing: '0.12em', color: 'var(--osd-accent)' }}>
+          <span>{no}</span> <span style={{ color: dim }}>//</span> <span>{kicker}</span>
+        </div>
       </Rise>
-    )}
-  </div>
-);
+      <motion.div
+        initial={live ? { opacity: 0, y: 24, filter: 'blur(10px)', clipPath: 'inset(-25% 100% -25% 0%)' } : false}
+        animate={
+          live
+            ? {
+                opacity: 1,
+                y: 0,
+                filter: 'blur(0px)',
+                clipPath: 'inset(-25% 0% -25% 0%)',
+                transitionEnd: { filter: 'none', clipPath: 'none' },
+              }
+            : {}
+        }
+        transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
+      >
+        <h2
+          style={{
+            margin: '18px 0 0',
+            fontFamily: 'var(--osd-font-display)',
+            fontSize: 68,
+            fontWeight: 900,
+            lineHeight: 1.2,
+            letterSpacing: '0.01em',
+          }}
+        >
+          {title}
+        </h2>
+      </motion.div>
+      {sub && (
+        <Rise delay={0.45}>
+          <p style={{ margin: '14px 0 0', fontSize: 28, lineHeight: 1.5, color: muted }}>{sub}</p>
+        </Rise>
+      )}
+    </div>
+  );
+};
 
 const Chip = ({ children, tone = 'accent' }: { children: ReactNode; tone?: 'accent' | 'amber' }) => (
   <span
@@ -660,7 +681,7 @@ const Cover: Page = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 2.2, duration: 0.8 }}
       >
-        開始下潛
+        <div>開始下潛</div>
         <div style={{ fontSize: 30, color: 'var(--osd-accent)', animation: live ? 'dv-bob 1.8s ease-in-out infinite' : 'none' }}>
           ↓
         </div>
@@ -867,7 +888,9 @@ const Intro: Page = () => (
       />
     </div>
     <Rise delay={1.6} style={{ position: 'absolute', left: PAD, top: 906, fontSize: 30, fontWeight: 500 }}>
-      接下來的每一件作品，都是和這群夥伴<span style={{ color: 'var(--osd-accent)' }}>一起做出來的</span> →
+      <span>
+        接下來的每一件作品，都是和這群夥伴<span style={{ color: 'var(--osd-accent)' }}>一起做出來的</span> →
+      </span>
     </Rise>
   </Frame>
 );
@@ -977,14 +1000,16 @@ const AwardCard = ({
   photo,
   rank,
   title,
-  work,
+  work1,
+  work2,
   delay,
   children,
 }: {
   photo: string;
   rank: string;
   title: string;
-  work: ReactNode;
+  work1: string;
+  work2: string;
   delay: number;
   children: ReactNode;
 }) => {
@@ -1033,13 +1058,19 @@ const AwardCard = ({
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 260, damping: 14, delay: delay + 0.6 }}
           >
-            {rank}
+            <span>{rank}</span>
           </motion.div>
         </div>
         <div>
           <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3 }}>{title}</div>
           <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.5, color: muted }}>{children}</div>
-          <div style={{ marginTop: 10, fontSize: 26, lineHeight: 1.5 }}>{work}</div>
+          <div style={{ marginTop: 10, fontSize: 26, lineHeight: 1.5 }}>
+            <div>
+              <span style={{ color: 'var(--osd-accent)' }}>作品｜</span>
+              <span>{work1}</span>
+            </div>
+            <div>{work2}</div>
+          </div>
         </div>
       </div>
     </Rise>
@@ -1086,7 +1117,7 @@ const Awards: Page = () => (
     <Header
       no="02"
       kicker="學術活動 ｜ 競賽"
-      title="一個題目，從比賽一路做下去"
+      title="一個概念，從比賽一路做下去"
       sub="全國電子設計創意競賽 → 海峽兩岸青少年創客大賽 → 大學專題「倍伴練」"
     />
     <div style={{ position: 'absolute', left: PAD, top: 330, display: 'flex', gap: 40 }}>
@@ -1094,13 +1125,8 @@ const Awards: Page = () => (
         photo={awardNational}
         rank="季軍"
         title="第二十二屆 全國電子設計創意競賽"
-        work={
-          <>
-            <span style={{ color: 'var(--osd-accent)' }}>作品｜</span>基於 ML Kit 邊緣運算之
-            <br />
-            即時動態感知與遠端照護系統
-          </>
-        }
+        work1="基於 ML Kit 邊緣運算之"
+        work2="即時動態感知與遠端照護系統"
         delay={0.5}
       >
         智慧大數據及行動 APP 類 ｜{' '}
@@ -1113,13 +1139,8 @@ const Awards: Page = () => (
         photo={awardCrossStrait}
         rank="一等獎"
         title="第十一屆 海峽兩岸青少年創客大賽"
-        work={
-          <>
-            <span style={{ color: 'var(--osd-accent)' }}>作品｜</span>《CareYou》居家復健平台
-            <br />
-            延續核心概念，加入本地 LLM 與語音
-          </>
-        }
+        work1="《CareYou》居家復健平台"
+        work2="延續核心概念，加入本地 LLM 與語音"
         delay={0.75}
       >
         開源創新組 ｜ 上海同濟大學總決賽
@@ -1452,7 +1473,9 @@ const HomeLab: Page = () => {
         </div>
       </div>
       <Rise delay={2.4} style={{ position: 'absolute', left: PAD, top: 922, fontSize: 32, fontWeight: 700 }}>
-        在有限的硬體上部署模型，關鍵也在<span style={{ color: 'var(--osd-accent)' }}>資料怎麼搬</span>。
+        <span>
+          在有限的硬體上部署模型，關鍵也在<span style={{ color: 'var(--osd-accent)' }}>資料怎麼搬</span>。
+        </span>
       </Rise>
     </Frame>
   );
@@ -1470,14 +1493,16 @@ const BringRow = ({
   i,
   skill,
   field,
-  did,
+  did1,
+  did2,
   bring,
 }: {
   i: number;
   skill: string;
   field: string;
-  did: ReactNode;
-  bring: ReactNode;
+  did1: string;
+  did2: string;
+  bring: string;
 }) => {
   const live = useIsActivePage();
   const top = ROWS_TOP + i * (ROW_H + ROW_GAP);
@@ -1499,7 +1524,10 @@ const BringRow = ({
         transition={{ duration: 0.7, delay, ease: EASE }}
       >
         <div style={{ fontFamily: MONO, fontSize: 22, letterSpacing: '0.08em', color: 'var(--osd-accent)' }}>{skill}</div>
-        <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.55, color: muted }}>{did}</div>
+        <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.55, color: muted }}>
+          <div>{did1}</div>
+          <div>{did2}</div>
+        </div>
       </motion.div>
       <svg
         width={RIGHT_X - (PAD + LEFT_W)}
@@ -1557,48 +1585,33 @@ const Bring: Page = () => (
   <Frame depth={300}>
     <Header no="06" kicker="我能帶來的" title="我能為實驗室帶來什麼" sub="把做過的事，接到海下所的研究上" />
     <Rise delay={0.4} style={{ position: 'absolute', left: PAD, top: 332, width: LEFT_W, fontFamily: MONO, fontSize: 22, color: dim }}>
-      我做過的
+      <span>我做過的</span>
     </Rise>
     <Rise delay={0.4} style={{ position: 'absolute', left: RIGHT_X, top: 332, fontFamily: MONO, fontSize: 22, color: dim }}>
-      能帶到實驗室的
+      <span>能帶到實驗室的</span>
     </Rise>
     <BringRow
       i={0}
       skill="邊緣 AI 部署"
       field="AI 模型最佳化"
-      did={
-        <>
-          中階手機 30 FPS、單幀 18–25 ms，iPad 本機推論
-          <br />
-          HomeLab：125B 模型分層跑在 44GB 顯示記憶體上
-        </>
-      }
+      did1="中階手機 30 FPS、單幀 18–25 ms，iPad 本機推論"
+      did2="HomeLab：125B 模型分層跑在 44GB 顯示記憶體上"
       bring="把「有限硬體也跑得動」的經驗，用在水下載具的即時推論"
     />
     <BringRow
       i={1}
       skill="電腦視覺"
       field="水下影像處理"
-      did={
-        <>
-          骨架偵測、關節角度計算、遮蔽幀線性插補
-          <br />
-          MediaPipe 虹膜偵測與 5 點視線校準
-        </>
-      }
+      did1="骨架偵測、關節角度計算、遮蔽幀線性插補"
+      did2="MediaPipe 虹膜偵測與 5 點視線校準"
       bring="把處理不穩定影像的經驗，延伸到水下影像增強與辨識"
     />
     <BringRow
       i={2}
       skill="系統實作"
       field="實驗工具與系統整合"
-      did={
-        <>
-          從 App、本機 AI 到患者・家屬・醫師三端同步
-          <br />
-          自寫 ARKit 外掛，把原型做成能上台比賽的作品
-        </>
-      }
+      did1="從 App、本機 AI 到患者・家屬・醫師三端同步"
+      did2="自寫 ARKit 外掛，把原型做成能上台比賽的作品"
       bring="快速做出實驗工具與展示原型，讓研究成果真的能用"
     />
   </Frame>
@@ -1613,13 +1626,17 @@ const Stage = ({
   i,
   phase,
   title,
-  lines,
+  line1,
+  line2,
+  line3,
   final = false,
 }: {
   i: number;
   phase: string;
   title: string;
-  lines: string[];
+  line1: string;
+  line2: string;
+  line3: string;
   final?: boolean;
 }) => {
   const live = useIsActivePage();
@@ -1678,9 +1695,9 @@ const Stage = ({
         <div style={{ fontFamily: MONO, fontSize: 22, color: tone, letterSpacing: '0.08em' }}>{phase}</div>
         <div style={{ marginTop: 6, fontSize: 36, fontWeight: 700, lineHeight: 1.3 }}>{title}</div>
         <div style={{ marginTop: 12, fontSize: 26, lineHeight: 1.6, color: muted }}>
-          <div>{lines[0]}</div>
-          <div>{lines[1]}</div>
-          <div>{lines[2]}</div>
+          <div>{line1}</div>
+          <div>{line2}</div>
+          <div>{line3}</div>
         </div>
       </motion.div>
     </div>
@@ -1709,20 +1726,20 @@ const StudyPlan: Page = () => {
     <Frame depth={500}>
       <Header no="07" kicker="讀書計畫" title="從陸地，走進海下" />
       <Rise delay={0.4} style={{ position: 'absolute', left: PAD, top: NODE_Y[0] - 72, fontFamily: MONO, fontSize: 22, color: dim }}>
-        ▾ 下潛路線
+        <span>▾ 下潛路線</span>
       </Rise>
       <Steps>
         <Step duration={1}>
-          <Stage i={0} phase="入學前" title="補海洋基礎" lines={['水中聲學．水下載具入門', '機率統計．訊號與系統', '水下影像與聲納辨識文獻']} />
+          <Stage i={0} phase="入學前" title="補海洋基礎" line1="水中聲學．水下載具入門" line2="機率統計．訊號與系統" line3="水下影像與聲納辨識文獻" />
         </Step>
         <Step duration={1}>
-          <Stage i={1} phase="碩一" title="修課與實作" lines={['海下科技研討．水下載具導論', '海上實習：ROV．聲納．定位', '加入實驗室．參與計畫']} />
+          <Stage i={1} phase="碩一" title="修課與實作" line1="海下科技研討．水下載具導論" line2="海上實習：ROV．聲納．定位" line3="加入實驗室．參與計畫" />
         </Step>
         <Step duration={1}>
-          <Stage i={2} phase="碩二" title="研究與論文" lines={['混濁、低光的水下影像處理', 'AI 模型最佳化與即時推論', '感知可信度評估．完成論文']} />
+          <Stage i={2} phase="碩二" title="研究與論文" line1="混濁、低光的水下影像處理" line2="AI 模型最佳化與即時推論" line3="感知可信度評估．完成論文" />
         </Step>
         <Step duration={1}>
-          <Stage i={3} phase="畢業後" title="投入海洋科技" lines={['水下影像處理．目標辨識', 'AI 模型最佳化與邊緣部署', '水下載具．國防科技研發']} final />
+          <Stage i={3} phase="畢業後" title="投入海洋科技" line1="水下影像處理．目標辨識" line2="AI 模型最佳化與邊緣部署" line3="水下載具．國防科技研發" final />
         </Step>
         <Step duration={1}>
           <Thanks />
@@ -1735,7 +1752,7 @@ const StudyPlan: Page = () => {
 // ─── Deck ────────────────────────────────────────────────────────────────────
 
 // Shared with slides/nsysu-interview-7a, which swaps in another page 7 for comparison.
-export { amber, dim, EASE, Frame, Header, line, MONO, muted, PAD, panel, rand, Rise, unblur, useStepShown };
+export { amber, dim, EASE, Frame, line, MONO, muted, PAD, panel, rand, Rise, useStepShown };
 
 export const transition: SlideTransition = {
   duration: 280,
