@@ -875,7 +875,7 @@ const Intro: Page = () => (
   </Frame>
 );
 
-// ─── 3. 專題 × 競賽作品：倍伴練 ──────────────────────────────────────────────
+// ─── 4. 大學專題：倍伴練 ─────────────────────────────────────────────────────
 
 const Stat = ({ delay, value, label }: { delay: number; value: ReactNode; label: string }) => (
   <Rise delay={delay} style={{ borderTop: `2px solid ${line}`, paddingTop: 12 }}>
@@ -885,12 +885,12 @@ const Stat = ({ delay, value, label }: { delay: number; value: ReactNode; label:
 );
 
 const Project: Page = () => (
-  <Frame depth={60}>
+  <Frame depth={100}>
     <Header
-      no="02"
-      kicker="學術活動 ｜ 專題 × 競賽作品"
+      no="03"
+      kicker="學術活動 ｜ 大學專題"
       title="倍伴練：讓平板即時看懂復健動作"
-      sub="大學專題：基於 TensorFlow 邊緣端點之即時骨架動態感知系統 ｜ 指導教授：林峰正 副教授"
+      sub="延續比賽的核心概念：基於 TensorFlow 邊緣端點之即時骨架動態感知系統 ｜ 指導教授：林峰正 副教授"
     />
     <VideoFrame
       src={plusrepVideo}
@@ -943,7 +943,7 @@ const Project: Page = () => (
   </Frame>
 );
 
-// ─── 4. 競賽 ─────────────────────────────────────────────────────────────────
+// ─── 3. 競賽：題目的起點 ─────────────────────────────────────────────────────
 
 const Burst = () => {
   const live = useIsActivePage();
@@ -980,12 +980,14 @@ const AwardCard = ({
   photo,
   rank,
   title,
+  work,
   delay,
   children,
 }: {
   photo: string;
   rank: string;
   title: string;
+  work: ReactNode;
   delay: number;
   children: ReactNode;
 }) => {
@@ -1003,7 +1005,7 @@ const AwardCard = ({
         boxShadow: '0 30px 80px rgba(0,0,0,0.45)',
       }}
     >
-      <div style={{ height: 400, overflow: 'hidden' }}>
+      <div style={{ height: 340, overflow: 'hidden' }}>
         <motion.img
           src={photo}
           alt={title}
@@ -1040,35 +1042,93 @@ const AwardCard = ({
         <div>
           <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.3 }}>{title}</div>
           <div style={{ marginTop: 8, fontSize: 26, lineHeight: 1.5, color: muted }}>{children}</div>
+          <div style={{ marginTop: 10, fontSize: 26, lineHeight: 1.5 }}>{work}</div>
         </div>
       </div>
     </Rise>
   );
 };
 
+// "延續" badge sitting in the gap between the two award cards.
+const CarryOn = () => {
+  const live = useIsActivePage();
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        left: PAD + 820 + 20 - 48,
+        top: 330 + 170 - 48,
+        width: 96,
+        height: 96,
+        borderRadius: '50%',
+        display: 'grid',
+        placeItems: 'center',
+        textAlign: 'center',
+        background: 'var(--osd-bg)',
+        border: '3px solid var(--osd-accent)',
+        boxShadow: '0 0 30px rgba(95,227,224,0.45)',
+        color: 'var(--osd-accent)',
+        fontSize: 22,
+        fontWeight: 700,
+        lineHeight: 1.2,
+      }}
+      initial={live ? { scale: 0, rotate: -90 } : false}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 16, delay: 1.4 }}
+    >
+      <div>
+        延續
+        <div style={{ fontSize: 30, animation: live ? 'dv-nudge 1.6s ease-in-out 2s infinite' : 'none' }}>→</div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Awards: Page = () => (
-  <Frame depth={100}>
+  <Frame depth={60}>
     <Header
-      no="03"
+      no="02"
       kicker="學術活動 ｜ 競賽"
-      title="把作品帶上舞台"
-      sub="第一次參賽就站上全國決賽，再延伸成居家復健平台《CareYou》"
+      title="一個題目，從比賽一路做下去"
+      sub="全國電子設計創意競賽 → 海峽兩岸青少年創客大賽 → 大學專題「倍伴練」"
     />
     <div style={{ position: 'absolute', left: PAD, top: 330, display: 'flex', gap: 40 }}>
-      <AwardCard photo={awardNational} rank="季軍" title="第二十二屆 全國電子設計創意競賽" delay={0.5}>
-        智慧大數據及行動 APP 類
-        <br />
+      <AwardCard
+        photo={awardNational}
+        rank="季軍"
+        title="第二十二屆 全國電子設計創意競賽"
+        work={
+          <>
+            <span style={{ color: 'var(--osd-accent)' }}>作品｜</span>基於 ML Kit 邊緣運算之
+            <br />
+            即時動態感知與遠端照護系統
+          </>
+        }
+        delay={0.5}
+      >
+        智慧大數據及行動 APP 類 ｜{' '}
         <span style={{ fontFamily: MONO, color: 'var(--osd-accent)' }}>
           <CountUp to={33} delay={1.2} />
         </span>{' '}
         隊入圍決賽
       </AwardCard>
-      <AwardCard photo={awardCrossStrait} rank="一等獎" title="第十一屆 海峽兩岸青少年創客大賽" delay={0.75}>
+      <AwardCard
+        photo={awardCrossStrait}
+        rank="一等獎"
+        title="第十一屆 海峽兩岸青少年創客大賽"
+        work={
+          <>
+            <span style={{ color: 'var(--osd-accent)' }}>作品｜</span>《CareYou》居家復健平台
+            <br />
+            延續核心概念，加入本地 LLM 與語音
+          </>
+        }
+        delay={0.75}
+      >
         開源創新組 ｜ 上海同濟大學總決賽
-        <br />
-        本地 LLM ＋ 本地化語音的居家復健平台
       </AwardCard>
     </div>
+    <CarryOn />
   </Frame>
 );
 
@@ -1772,7 +1832,7 @@ export const meta: SlideMeta = {
   createdAt: '2026-10-28T07:51:38.876Z',
 };
 
-export default [Cover, Intro, Project, Awards, AppWork, HomeLab, Motivation, StudyPlan] satisfies Page[];
+export default [Cover, Intro, Awards, Project, AppWork, HomeLab, Motivation, StudyPlan] satisfies Page[];
 
 export const notes: (string | undefined)[] = [
   `（約 20 秒）
@@ -1786,20 +1846,19 @@ export const notes: (string | undefined)[] = [
 我們也一起組隊比賽，決賽前幾天都窩在一起改程式、一起上台；
 還會一起去參加技術活動，跟很多不同背景的人交流。
 所以等一下要分享的作品，其實都是我跟這群夥伴一起做出來的。`,
-  `（約 50 秒｜影片會自己靜音播放，邊播邊講）
-先看我的大學專題，是林峰正老師指導的，我們也把它做成競賽作品，叫「倍伴練」。
-在家復健常常很無聊，動作做得對不對，也沒有人知道。
-所以我們讓平板的鏡頭直接看懂動作：用 BlazePose 跟 MoveNet 抓出身體的關節點，再用向量夾角算出關節角度，判斷動作有沒有做到位，順便自動計次，完全不用穿戴裝置。
+  `（約 40 秒）
+我的第一個題目，是從比賽開始的。
+我第一次參賽，是全國電子設計創意競賽。我們用 ML Kit 讓手機在本機即時看懂復健動作，再把結果同步給家屬跟醫師，最後在 33 隊決賽裡拿到季軍。
+接著我們延續同樣的核心概念，做成居家復健平台 CareYou，加入本地的語言模型和語音，到上海同濟大學參加海峽兩岸青少年創客大賽，拿到一等獎。
+比賽讓我學到最重要的一件事：作品不是能跑就好，要真的有人能用。`,
+  `（約 45 秒｜影片會自己靜音播放，邊播邊講）
+最後，這個題目延續成我的大學專題，由林峰正老師指導，我們幫它取了一個好記的名字，叫「倍伴練」。
+專題改用 TensorFlow，在平板上用 BlazePose 跟 MoveNet 抓出身體的關節點，再用向量夾角算出關節角度，判斷動作有沒有做到位，順便自動計次，完全不用穿戴裝置。
 速度的部分，中階手機上一幀大概 18 到 25 毫秒，可以跑到 30 FPS；姿勢做錯，不到 0.5 秒就會有語音提醒。
 我們還做了一個本機的 AI 小幫手「小伴」，會用台語幫患者加油，家屬跟醫師也能同步看到進度。而且影像都在 iPad 上算，不用上傳雲端。
 （老師如果想看，可以按影片右下角「有聲播放」）`,
-  `（約 30 秒）
-這個題目，我們也帶去比賽了。
-我第一次參賽，就是全國電子設計創意競賽，在 33 隊決賽裡拿到季軍。
-後來我們把它延伸成居家復健平台 CareYou，到上海同濟大學參加海峽兩岸青少年創客大賽，拿到一等獎。
-比賽讓我學到最重要的一件事：作品不是能跑就好，要真的有人能用。`,
   `（約 40 秒）
-第三個作品叫「造星者」，是幫小朋友練專注力的 App，主要的程式是我寫的。
+另一個作品叫「造星者」，是幫小朋友練專注力的 App，主要的程式是我寫的。
 它的核心是視線追蹤：網頁版用 MediaPipe 抓虹膜；iPad 版我自己寫了 ARKit 外掛，把視線投影到螢幕上，再看 5 個點做校準。
 測試的時候我們發現，鏡頭被遮住時系統會誤判，所以我加了一條規則：視線停住超過 3 秒，就算分心。
 不過它在只看企劃書的初賽就被刷掉了。回頭檢討，是企劃書少了數據。這讓我學到，做得出來只是第一步，還要能用數據證明它的價值。
@@ -1813,11 +1872,11 @@ export const notes: (string | undefined)[] = [
 像在我的專題裡，只要人被擋住、或光線不夠，關節點的信心值就會往下掉，骨架就開始亂跳。
 ［→］那換到水下呢？光線會衰減、水很混濁、通訊又受限，這個問題只會更嚴重。
 ［→］載具沒辦法一直問岸上該怎麼辦，它必須自己當下做判斷。這就是我想來海下所的原因。`,
-  `（約 40 秒｜每按一次 → 帶出一個階段，最後一下帶出致謝）
+  `（約 45 秒｜每按一次 → 帶出一個階段，最後一下帶出致謝）
 所以我的讀書計畫分成四個階段。
 ［→］入學前，先把基礎補起來：水中聲學、水下載具，還有訊號與系統。
 ［→］碩一，修海下科技研討、水下載具導論這些課，也希望透過海上實習，實際碰到 ROV、聲納跟水下定位，並且早點加入實驗室。
-［→］碩二，我想研究在混濁、低光的水下，怎麼用影像處理把畫面看清楚；再透過 AI 模型最佳化，讓模型能在載具上即時推論，同時評估感知的可信度。
-［→］畢業之後，希望繼續往水下影像處理、AI 模型最佳化這些方向深耕，投入水下載具或國防科技相關的研發。
+［→］碩二，我想研究在混濁、低光的水下，怎麼用影像處理把畫面看清楚，再用 AI 模型最佳化讓它能在載具上即時跑，同時評估感知的可信度。
+［→］畢業之後，希望繼續深耕水下影像處理和 AI 模型最佳化，投入水下載具或國防科技的研發。
 ［→］以上是我的報告，謝謝老師，請老師指教。`,
 ];
